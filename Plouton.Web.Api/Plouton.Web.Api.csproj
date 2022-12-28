@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.31.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Plouton.Persistence.CosmosDb\Plouton.Persistence.CosmosDb.csproj" />
+    <ProjectReference Include="..\Plouton.Domain\Plouton.Domain.csproj" />
+    <ProjectReference Include="..\Plouton.Persistence.Abstractions\Plouton.Persistence.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

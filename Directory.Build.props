@@ -1,0 +1,16 @@
+<Project>
+    <PropertyGroup>
+        <Title>Plouton</Title>
+        <Authors>Isaac Brown</Authors>
+        <Description>Invoice related services.</Description>
+        <RepositoryType>git</RepositoryType>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
+        <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="NodaTime" Version="3.1.6" />
+    </ItemGroup>
+</Project>
