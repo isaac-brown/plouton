@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Plouton.Domain;
 using Plouton.Domain.Entities;
 using Plouton.Persistence.Abstractions;
 using Plouton.Web.Api.Extensions;
@@ -15,15 +15,20 @@ namespace Plouton.Web.Api.Controllers;
 /// Provides methods to interact with invoices.
 /// </summary>
 [ApiController]
-[Route("/api/invoices")]
+[Route("/api/v1/invoices")]
 public class InvoicesController : ControllerBase
 {
     private readonly InvoiceRepository invoiceRepository;
+    private readonly IdGenerator generator;
     private readonly ILogger<InvoicesController> logger;
 
-    public InvoicesController(InvoiceRepository invoiceRepository, ILogger<InvoicesController> logger)
+    public InvoicesController(
+        InvoiceRepository invoiceRepository,
+        IdGenerator generator,
+        ILogger<InvoicesController> logger)
     {
         this.invoiceRepository = invoiceRepository;
+        this.generator = generator;
         this.logger = logger;
     }
 
@@ -61,7 +66,29 @@ public class InvoicesController : ControllerBase
     public async Task<ActionResult> Post(CreateInvoiceRequestDto request, CancellationToken ct)
     {
         var invoice = request.ToInvoice();
+
+        var nextId = await this.generator.NextIdAsync();
+        var invoiceNumber = $"INV{nextId:000000}";
+
+        invoice = invoice with
+        {
+            InvoiceNumber = invoiceNumber,
+        };
         invoice = await this.invoiceRepository.CreateAsync(invoice.Id, invoice, ct);
+        return this.CreatedAtAction(nameof(this.Get), new { id = invoice.Id }, invoice.ToGetInvoiceResponseDto());
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult> Put([FromRoute] Guid id, UpdateInvoiceRequestDto request, CancellationToken ct)
+    {
+        Invoice? invoice = await this.invoiceRepository.ReadAsync(id, ct);
+        if (invoice is null)
+        {
+            return this.NotFound();
+        }
+
+        invoice = request.ToInvoice(invoice);
+        invoice = await this.invoiceRepository.UpdateAsync(invoice, ct);
         return this.CreatedAtAction(nameof(this.Get), new { id = invoice.Id }, invoice.ToGetInvoiceResponseDto());
     }
 

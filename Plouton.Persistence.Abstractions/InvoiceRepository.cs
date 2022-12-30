@@ -30,5 +30,5 @@ public abstract class InvoiceRepository : ICrudRepository<Guid, Invoice>
     public abstract Task<Invoice?> ReadAsync(Guid key, CancellationToken cancellationToken);
 
     /// <inheritdoc/>
-    public abstract Task<Invoice> UpdateAsync(Guid key, Invoice item, CancellationToken cancellationToken);
+    public abstract Task<Invoice> UpdateAsync(Invoice item, CancellationToken cancellationToken);
 }

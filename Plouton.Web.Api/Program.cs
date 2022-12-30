@@ -3,6 +3,7 @@
 // </copyright>
 
 using Microsoft.Azure.Cosmos;
+using Plouton.Domain;
 using Plouton.Persistence.Abstractions;
 using Plouton.Persistence.CosmosDb;
 
@@ -14,10 +15,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<InvoiceRepository, CosmosInvoiceRepository>();
-builder.Services.AddSingleton<CosmosClient>(cfg => {
+builder.Services.AddSingleton(cfg =>
+{
     string connectionString = builder.Configuration.GetConnectionString("Plouton");
     return new CosmosClient(connectionString);
 });
+builder.Services.AddSingleton<IdGenerator, CosmosIdGenerator>();
 
 var app = builder.Build();
 

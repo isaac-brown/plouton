@@ -85,8 +85,8 @@ public class CosmosInvoiceRepository : InvoiceRepository
 
         var partitionKey = new PartitionKey(key.ToString());
 
-        await this.Container.CreateItemAsync(record, partitionKey, cancellationToken: cancellationToken);
-
+        record = await this.Container.CreateItemAsync(record, partitionKey, cancellationToken: cancellationToken);
+        item = record.ToInvoice();
         return item;
     }
 
@@ -100,9 +100,14 @@ public class CosmosInvoiceRepository : InvoiceRepository
     }
 
     /// <inheritdoc/>
-    public override Task<Invoice> UpdateAsync(Guid key, Invoice item, CancellationToken cancellationToken)
+    public override async Task<Invoice> UpdateAsync(Invoice item, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var id = item.Id.ToString();
+        var partitionKey = new PartitionKey(id);
+        var record = item.ToInvoiceRecord();
+        record = await this.Container.UpsertItemAsync(record, partitionKey, cancellationToken: cancellationToken);
+        item = record.ToInvoice();
+        return item;
     }
 
     /// <inheritdoc/>

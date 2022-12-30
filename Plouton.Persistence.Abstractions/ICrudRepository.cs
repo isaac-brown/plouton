@@ -38,7 +38,7 @@ where TValue : class
     /// <param name="key">The <see cref="TKey"/> of the item to update.
     /// <param name="item">The instance of <see cref="TValue"/> to update.</param>
     /// <param name="cancellationToken">Used to cancel the asynchronous operation.</param>
-    Task<TValue> UpdateAsync(TKey key, TValue item, CancellationToken cancellationToken);
+    Task<TValue> UpdateAsync(TValue item, CancellationToken cancellationToken);
 
     /// <summary>
     /// Asynchronously deletes the given <paramref name="item"/> in the backing store.
