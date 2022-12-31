@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Security.Claims;
 using NodaTime;
 using NodaTime.Text;
 using Plouton.Domain.Entities;
@@ -14,9 +15,9 @@ public class UpdateInvoiceRequestDto
     public string WhenDue { get; set; }
     public string WhenIssued { get; set; }
     public string? Reference { get; set; }
-    public IEnumerable<CreateOrUpdateLineItemDto> LineItems { get; set; }
+    public IEnumerable<CreateOrUpdateLineItemRequestDto> LineItems { get; set; }
 
-    public Invoice ToInvoice(Invoice existingInvoice)
+    public Invoice ToInvoice(Invoice existingInvoice, ClaimsPrincipal user)
     {
         var instantPattern = InstantPattern.CreateWithCurrentCulture("yyyy-MM-dd");
         return existingInvoice with {
@@ -26,7 +27,7 @@ public class UpdateInvoiceRequestDto
             LineItems = this.LineItems.Select(lineItem => lineItem.ToLineItem()).ToList(),
             Reference = this.Reference,
             WhenModified = Instant.FromDateTimeUtc(DateTime.UtcNow),
-            WhoModified = "TODO",
+            WhoModified = user.Identity.Name,
         };
     }
 }

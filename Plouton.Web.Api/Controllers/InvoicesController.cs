@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Plouton.Domain;
 using Plouton.Domain.Entities;
@@ -19,20 +20,18 @@ namespace Plouton.Web.Api.Controllers;
 public class InvoicesController : ControllerBase
 {
     private readonly InvoiceRepository invoiceRepository;
-    private readonly IdGenerator generator;
     private readonly ILogger<InvoicesController> logger;
 
     public InvoicesController(
         InvoiceRepository invoiceRepository,
-        IdGenerator generator,
         ILogger<InvoicesController> logger)
     {
         this.invoiceRepository = invoiceRepository;
-        this.generator = generator;
         this.logger = logger;
     }
 
     [HttpGet]
+    [Authorize(Policy = "IsInvoiceReader")]
     public async Task<ActionResult> Get([FromQuery] int? limit, [FromQuery] string? token, CancellationToken ct)
     {
         int ulimit = limit.GetValueOrDefault(1000);
@@ -49,6 +48,7 @@ public class InvoicesController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "IsInvoiceReader")]
     public async Task<ActionResult> Get([FromRoute] Guid id, CancellationToken ct)
     {
         Invoice? invoice = await this.invoiceRepository.ReadAsync(id, ct);
@@ -63,22 +63,19 @@ public class InvoicesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Post(CreateInvoiceRequestDto request, CancellationToken ct)
+    [Authorize(Policy = "IsInvoiceWriter")]
+    public async Task<ActionResult> Post(CreateInvoiceRequestDto request,
+                                         CancellationToken ct)
     {
-        var invoice = request.ToInvoice();
+        var invoice = request.ToInvoice(user: this.User);
 
-        var nextId = await this.generator.NextIdAsync();
-        var invoiceNumber = $"INV{nextId:000000}";
-
-        invoice = invoice with
-        {
-            InvoiceNumber = invoiceNumber,
-        };
         invoice = await this.invoiceRepository.CreateAsync(invoice.Id, invoice, ct);
+
         return this.CreatedAtAction(nameof(this.Get), new { id = invoice.Id }, invoice.ToGetInvoiceResponseDto());
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = "IsInvoiceWriter")]
     public async Task<ActionResult> Put([FromRoute] Guid id, UpdateInvoiceRequestDto request, CancellationToken ct)
     {
         Invoice? invoice = await this.invoiceRepository.ReadAsync(id, ct);
@@ -87,12 +84,13 @@ public class InvoicesController : ControllerBase
             return this.NotFound();
         }
 
-        invoice = request.ToInvoice(invoice);
+        invoice = request.ToInvoice(invoice, this.User);
         invoice = await this.invoiceRepository.UpdateAsync(invoice, ct);
-        return this.CreatedAtAction(nameof(this.Get), new { id = invoice.Id }, invoice.ToGetInvoiceResponseDto());
+        return this.Ok(invoice.ToGetInvoiceResponseDto());
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "IsInvoiceDeleter")]
     public async Task<ActionResult> Delete([FromRoute] Guid id, CancellationToken ct)
     {
         Invoice? invoice = await this.invoiceRepository.ReadAsync(id, ct);

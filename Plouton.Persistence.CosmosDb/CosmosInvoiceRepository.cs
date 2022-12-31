@@ -5,6 +5,7 @@
 using System.Text;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
+using Plouton.Domain;
 using Plouton.Domain.Entities;
 using Plouton.Persistence.Abstractions;
 using Plouton.Persistence.CosmosDb.Extensions;
@@ -18,14 +19,17 @@ namespace Plouton.Persistence.CosmosDb;
 public class CosmosInvoiceRepository : InvoiceRepository
 {
     private readonly CosmosClient client;
+    private readonly IdGenerator idGenerator;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CosmosInvoiceRepository"/> class.
     /// </summary>
     /// <param name="client">The cosmos db client to use.</param>
-    public CosmosInvoiceRepository(CosmosClient client)
+    /// <param name="idGenerator">Used to generate sequential identifiers.
+    public CosmosInvoiceRepository(CosmosClient client, IdGenerator idGenerator)
     {
         this.client = client;
+        this.idGenerator = idGenerator;
     }
 
     private Container Container => this.client.GetDatabase("Plouton").GetContainer("Invoices");
@@ -82,6 +86,9 @@ public class CosmosInvoiceRepository : InvoiceRepository
     public override async Task<Invoice> CreateAsync(Guid key, Invoice item, CancellationToken cancellationToken)
     {
         var record = item.ToInvoiceRecord();
+
+        var nextId = await this.idGenerator.NextIdAsync();
+        record.InvoiceNumber = $"INV{nextId:000000}";
 
         var partitionKey = new PartitionKey(key.ToString());
 

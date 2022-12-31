@@ -6,13 +6,13 @@ using Plouton.Domain.Entities;
 
 namespace Plouton.Web.Api.Models
 {
-    public class CreateOrUpdateLineItemDto
+    public class CreateOrUpdateLineItemRequestDto
     {
         public string Description { get; set; }
         public int Quantity { get; set; }
         public decimal AmountNet { get; set; }
         public decimal AmountTax { get; set; }
-        public IReadOnlyList<CreateOrUpdateLineAnnotation> Annotations { get; set; }
+        public IReadOnlyList<CreateOrUpdateLineAnnotationRequestDto> Annotations { get; set; }
 
         internal LineItem ToLineItem()
         {

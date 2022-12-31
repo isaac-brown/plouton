@@ -1,43 +1,69 @@
+# @name login
+POST http://localhost:8080/realms/plouton/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&client_id=test-client&username=isaac-brown&password=password&client_secret=Bj1ueFgn7VmjDbQXOZoJOwCw5Xbqqmpq
+
+###
+
+@authToken = {{login.response.body.$.access_token}}
+
 ### Get many (use defaults).
 GET https://localhost:7226/api/v1/invoices
+Authorization: Bearer {{authToken}}
 
 ### Get many (limit the number of invoices returned).
+# @name getManyWithLimit
 GET https://localhost:7226/api/v1/invoices?limit=3
+Authorization: Bearer {{authToken}}
+
+###
+
+@continuationToken = {{getManyWithLimit.response.body.$.token}}
 
 ### Get many (fetch the next page of records using a token).
 GET https://localhost:7226/api/v1/invoices?limit=3
-                                       &token=W3siY29tcG9zaXRlVG9rZW4iOnsidG9rZW4iOiIrUklEOn5jVmdHQVBUMUpFNEZBQUFBQUFBQUFBPT0jUlQ6MSNUUkM6MyNSVEQ6ZVhUSEwreW45UldnbFhOb0NOUGFCTUo1SzFuSE1iWT0jSVNWOjIjSUVPOjY1NTY3I1FDRjo4IiwicmFuZ2UiOnsibWluIjoiIiwibWF4IjoiRkYifX0sIm9yZGVyQnlJdGVtcyI6W3siaXRlbSI6MTY3MjE5MTYxOTQzNn1dLCJyaWQiOiJjVmdHQVBUMUpFNEZBQUFBQUFBQUFBPT0iLCJza2lwQ291bnQiOjAsImZpbHRlciI6InRydWUifV0=
-
-### Get one.
-GET https://localhost:7226/api/v1/invoices/3fe62dfe-d15e-4b98-bf3a-887cc4da56cd
+                                       &token={{continuationToken}}
+Authorization: Bearer {{authToken}}
 
 ### Create one.
+# @name createOne
 POST https://localhost:7226/api/v1/invoices
+Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
 {
-  "whoCreated": "string",
+  "whoCreated": "bob from accounts",
   "status": "Draft",
   "whenDue": "2022-12-29",
   "whenIssued": "2022-12-28",
-  "reference": "string",
+  "reference": "My reference",
   "lineItems": [
     {
-      "description": "string",
-      "quantity": 0,
-      "amountNet": 0,
-      "amountTax": 0,
+      "description": "A coat",
+      "quantity": 1,
+      "amountNet": 10,
+      "amountTax": 1.50,
       "annotations": [
         {
-          "description": "string"
+          "description": "What a lovely coat it is"
         }
       ]
     }
   ]
 }
 
+###
+
+@invoiceId = {{createOne.response.body.id}}
+
+### Get one.
+GET https://localhost:7226/api/v1/invoices/{{invoiceId}}
+Authorization: Bearer {{authToken}}
+
 ### Update one.
-PUT https://localhost:7226/api/v1/invoices/3fe62dfe-d15e-4b98-bf3a-887cc4da56cd
+PUT https://localhost:7226/api/v1/invoices/{{invoiceId}}
+Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
 {
@@ -51,4 +77,5 @@ Content-Type: application/json
 }
 
 ### Delete one.
-DELETE https://localhost:7226/api/v1/invoices/8269a621-ac7c-4980-bc8c-589460abf522
+DELETE https://localhost:7226/api/v1/invoices/{{invoiceId}}
+Authorization: Bearer {{authToken}}

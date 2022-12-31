@@ -6,7 +6,7 @@ using Plouton.Domain.Entities;
 
 namespace Plouton.Web.Api.Models;
 
-public class CreateOrUpdateLineAnnotation
+public class CreateOrUpdateLineAnnotationRequestDto
 {
     public string Description { get; set; }
 
