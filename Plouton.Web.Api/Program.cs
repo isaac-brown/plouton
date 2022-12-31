@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.IdentityModel.Tokens.Jwt;
 using Keycloak.AuthServices.Authentication;
 using Keycloak.AuthServices.Authorization;
 using Microsoft.AspNetCore.Authorization;
@@ -56,6 +57,10 @@ builder.Services.AddSingleton(cfg =>
     return new CosmosClient(connectionString);
 });
 builder.Services.AddSingleton<IdGenerator, CosmosIdGenerator>();
+
+// Clear the legacy mapping of claims from Open Id Connect to SOAP names.
+// See: https://mderriey.com/2019/06/23/where-are-my-jwt-claims/
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 var app = builder.Build();
 

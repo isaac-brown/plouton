@@ -7,8 +7,17 @@ using Plouton.Web.Api.Models;
 
 namespace Plouton.Web.Api.Extensions;
 
+/// <summary>
+/// Provides extension methods for <see cref="Invoice"/> instances.
+/// These methods are specific to the Web API implementation of Plouton.
+/// </summary>
 public static class InvoiceExtensions
 {
+    /// <summary>
+    /// Maps the given <paramref name="invoice"/> to a new instance of <see cref="GetInvoiceResponseDto"/>.
+    /// </summary>
+    /// <param name="invoice">The invoice which properties will be mapped from.</param>
+    /// <returns>A new instance of <see cref="GetInvoiceResponseDto"/>.</returns>
     public static GetInvoiceResponseDto ToGetInvoiceResponseDto(this Invoice invoice)
     {
         return new GetInvoiceResponseDto
@@ -20,8 +29,8 @@ public static class InvoiceExtensions
             Status = invoice.Status.ToString(),
             WhenCreated = invoice.WhenCreated.ToDateTimeUtc().ToLocalTime(),
             WhoCreated = invoice.WhoCreated,
-            WhenDue = invoice.WhenDue.ToDateTimeUtc().ToLocalTime(),
-            WhenIssued = invoice.WhenIssued.ToDateTimeUtc().ToLocalTime(),
+            WhenDue = invoice.WhenDue.AtMidnight().ToDateTimeUnspecified(),
+            WhenIssued = invoice.WhenIssued.AtMidnight().ToDateTimeUnspecified(),
             WhenModified = invoice.WhenModified.ToDateTimeUtc().ToLocalTime(),
             WhoModified = invoice.WhoModified,
         };

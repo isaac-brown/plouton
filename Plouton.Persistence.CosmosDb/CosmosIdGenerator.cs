@@ -8,15 +8,23 @@ using Plouton.Domain;
 
 namespace Plouton.Persistence.CosmosDb;
 
+/// <summary>
+/// Implementation of <see cref="IdGenerator"/> using Cosmos DB as the backing store.
+/// </summary>
 public class CosmosIdGenerator : IdGenerator
 {
     private readonly CosmosClient client;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CosmosIdGenerator"/> class.
+    /// </summary>
+    /// <param name="client">The Cosmos DB client to use to connect to the backing store.</param>
     public CosmosIdGenerator(CosmosClient client)
     {
         this.client = client;
     }
 
+    /// <inheritdoc/>
     public override async Task<int> NextIdAsync()
     {
         var container = this.client.GetDatabase("Plouton").GetContainer("Counters");
@@ -33,7 +41,7 @@ public class CosmosIdGenerator : IdGenerator
     private class GenericCounter
     {
         [JsonProperty(propertyName: "id")]
-        public string Id { get; set; }
+        public string Id { get; set; } = string.Empty;
 
         [JsonProperty(propertyName: "value")]
         public int Value { get; set; }

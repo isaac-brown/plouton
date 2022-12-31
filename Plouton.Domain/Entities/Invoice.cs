@@ -6,15 +6,33 @@ using NodaTime;
 
 namespace Plouton.Domain.Entities;
 
+#pragma warning disable SA1313 // Parameter should begin with lower-case letter. StyleCop doesn't seem to properly support record types.
+
+/// <summary>
+/// Represents an invoice for goods/services.
+/// </summary>
+/// <param name="Id">Uniquely identifies an invoice.</param>
+/// <param name="InvoiceNumber">Identifies an invoice.</param>
+/// <param name="WhenCreated">The <see cref="Instant"/> at which the invoice was created.</param>
+/// <param name="WhoCreated">The user which created the invoice.</param>
+/// <param name="Status">The status of the invoice.</param>
+/// <param name="WhenDue">The date that the invoice is due for payment.</param>
+/// <param name="WhenIssued">The date that the invoice was issued.</param>
+/// <param name="Reference">
+/// A context-specific reference.
+/// This usually represents the reference with which a customer should make payment.
+/// </param>
+/// <param name="WhenModified">The <see cref="Instant"/> at which the invoice was last modified.</param>
+/// <param name="WhoModified">The user which last modified the invoice.</param>
+/// <param name="LineItems">The line items for this invoice.</param>
 public record Invoice(Guid Id,
                       string InvoiceNumber,
                       Instant WhenCreated,
                       string WhoCreated,
                       InvoiceStatus Status,
-                      Instant WhenDue,
-                      Instant WhenIssued,
+                      LocalDate WhenDue,
+                      LocalDate WhenIssued,
                       string? Reference,
                       Instant WhenModified,
                       string WhoModified,
-                      IReadOnlyList<LineItem> LineItems
-                      );
+                      IReadOnlyList<LineItem> LineItems);

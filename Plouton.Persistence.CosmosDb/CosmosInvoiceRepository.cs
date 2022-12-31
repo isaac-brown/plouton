@@ -25,7 +25,7 @@ public class CosmosInvoiceRepository : InvoiceRepository
     /// Initializes a new instance of the <see cref="CosmosInvoiceRepository"/> class.
     /// </summary>
     /// <param name="client">The cosmos db client to use.</param>
-    /// <param name="idGenerator">Used to generate sequential identifiers.
+    /// <param name="idGenerator">Used to generate sequential identifiers.</param>
     public CosmosInvoiceRepository(CosmosClient client, IdGenerator idGenerator)
     {
         this.client = client;

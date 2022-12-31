@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Plouton.Web.Api</name>
+    </assembly>
+    <members>
+        <member name="T:Plouton.Web.Api.Controllers.InvoicesController">
+            <summary>
+            Provides methods to interact with invoices.
+            </summary>
+        </member>
+        <member name="M:Plouton.Web.Api.Controllers.InvoicesController.#ctor(Plouton.Persistence.Abstractions.InvoiceRepository,Microsoft.Extensions.Logging.ILogger{Plouton.Web.Api.Controllers.InvoicesController})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Plouton.Web.Api.Controllers.InvoicesController"/> class.
+            </summary>
+            <param name="invoiceRepository">The repository used to store invoices.</param>
+            <param name="logger">Used to write messages to.</param>
+        </member>
+        <member name="T:Plouton.Web.Api.Extensions.InvoiceExtensions">
+            <summary>
+            Provides extension methods for <see cref="T:Plouton.Domain.Entities.Invoice"/> instances.
+            These methods are specific to the Web API implementation of Plouton.
+            </summary>
+        </member>
+        <member name="M:Plouton.Web.Api.Extensions.InvoiceExtensions.ToGetInvoiceResponseDto(Plouton.Domain.Entities.Invoice)">
+            <summary>
+            Maps the given <paramref name="invoice"/> to a new instance of <see cref="T:Plouton.Web.Api.Models.GetInvoiceResponseDto"/>.
+            </summary>
+            <param name="invoice">The invoice which properties will be mapped from.</param>
+            <returns>A new instance of <see cref="T:Plouton.Web.Api.Models.GetInvoiceResponseDto"/>.</returns>
+        </member>
+    </members>
+</doc>

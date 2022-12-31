@@ -7,8 +7,17 @@ using Plouton.Web.Api.Models;
 
 namespace Plouton.Web.Api.Extensions;
 
+/// <summary>
+/// Provides extension methods for <see cref="LineItem"/> instances.
+/// These methods are specific to the Web API implementation of Plouton.
+/// </summary>
 public static class LineItemExtensions
 {
+    /// <summary>
+    /// Maps the given <paramref name="lineItem"/> to a new instance of <see cref="GetLineItemResponseDto"/>.
+    /// </summary>
+    /// <param name="lineItem">The lineItem which properties will be mapped from.</param>
+    /// <returns>A new instance of <see cref="GetLineItemResponseDto"/>.</returns>
     public static GetLineItemResponseDto ToGetLineItemResponseDto(this LineItem lineItem)
     {
         return new GetLineItemResponseDto

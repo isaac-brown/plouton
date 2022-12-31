@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Plouton.Domain;
 using Plouton.Domain.Entities;
 using Plouton.Persistence.Abstractions;
 using Plouton.Web.Api.Extensions;
@@ -22,6 +21,11 @@ public class InvoicesController : ControllerBase
     private readonly InvoiceRepository invoiceRepository;
     private readonly ILogger<InvoicesController> logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InvoicesController"/> class.
+    /// </summary>
+    /// <param name="invoiceRepository">The repository used to store invoices.</param>
+    /// <param name="logger">Used to write messages to.</param>
     public InvoicesController(
         InvoiceRepository invoiceRepository,
         ILogger<InvoicesController> logger)
@@ -30,6 +34,16 @@ public class InvoicesController : ControllerBase
         this.logger = logger;
     }
 
+    /// <summary>
+    /// Gets a page of invoices.
+    /// </summary>
+    /// <param name="limit">The maximum number of invoices to be returned on a page.</param>
+    /// <param name="token">The token to continue a previous query.</param>
+    /// <param name="ct">Used to cancel the asynchronous operation.</param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation.
+    /// The result will be an <see cref="ActionResult"/> which describes the result of the HTTP operation.
+    /// </returns>
     [HttpGet]
     [Authorize(Policy = "IsInvoiceReader")]
     public async Task<ActionResult> Get([FromQuery] int? limit, [FromQuery] string? token, CancellationToken ct)
@@ -47,6 +61,15 @@ public class InvoicesController : ControllerBase
         return this.Ok(response);
     }
 
+    /// <summary>
+    /// Gets a single invoice by id.
+    /// </summary>
+    /// <param name="id">The id of the invoice to retrieve.</param>
+    /// <param name="ct">Used to cancel the asynchronous operation.</param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation.
+    /// The result will be an <see cref="ActionResult"/> which describes the result of the HTTP operation.
+    /// </returns>
     [HttpGet("{id:guid}")]
     [Authorize(Policy = "IsInvoiceReader")]
     public async Task<ActionResult> Get([FromRoute] Guid id, CancellationToken ct)
@@ -62,18 +85,38 @@ public class InvoicesController : ControllerBase
         return this.Ok(response);
     }
 
+    /// <summary>
+    /// Creates a new invoice.
+    /// </summary>
+    /// <param name="request">The new invoice.</param>
+    /// <param name="ct">Used to cancel the asynchronous operation.</param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation.
+    /// The result will be an <see cref="ActionResult"/> which describes the result of the HTTP operation.
+    /// </returns>
     [HttpPost]
     [Authorize(Policy = "IsInvoiceWriter")]
-    public async Task<ActionResult> Post(CreateInvoiceRequestDto request,
-                                         CancellationToken ct)
+    public async Task<ActionResult> Post(
+        CreateInvoiceRequestDto request,
+        CancellationToken ct)
     {
-        var invoice = request.ToInvoice(user: this.User);
+        var invoice = request.ToInvoice(user: this.User.Identity);
 
         invoice = await this.invoiceRepository.CreateAsync(invoice.Id, invoice, ct);
 
         return this.CreatedAtAction(nameof(this.Get), new { id = invoice.Id }, invoice.ToGetInvoiceResponseDto());
     }
 
+    /// <summary>
+    /// Updates an existing invoice.
+    /// </summary>
+    /// <param name="id">The new invoice.</param>
+    /// <param name="request">The modified invoice.</param>
+    /// <param name="ct">Used to cancel the asynchronous operation.</param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation.
+    /// The result will be an <see cref="ActionResult"/> which describes the result of the HTTP operation.
+    /// </returns>
     [HttpPut("{id:guid}")]
     [Authorize(Policy = "IsInvoiceWriter")]
     public async Task<ActionResult> Put([FromRoute] Guid id, UpdateInvoiceRequestDto request, CancellationToken ct)
@@ -84,11 +127,20 @@ public class InvoicesController : ControllerBase
             return this.NotFound();
         }
 
-        invoice = request.ToInvoice(invoice, this.User);
+        invoice = request.ToInvoice(invoice, this.User.Identity);
         invoice = await this.invoiceRepository.UpdateAsync(invoice, ct);
         return this.Ok(invoice.ToGetInvoiceResponseDto());
     }
 
+    /// <summary>
+    /// Deletes an existing invoice.
+    /// </summary>
+    /// <param name="id">The new invoice.</param>
+    /// <param name="ct">Used to cancel the asynchronous operation.</param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation.
+    /// The result will be an <see cref="ActionResult"/> which describes the result of the HTTP operation.
+    /// </returns>
     [HttpDelete("{id:guid}")]
     [Authorize(Policy = "IsInvoiceDeleter")]
     public async Task<ActionResult> Delete([FromRoute] Guid id, CancellationToken ct)

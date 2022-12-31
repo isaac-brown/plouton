@@ -9,10 +9,19 @@ namespace Plouton.Domain.Entities
     /// </summary>
     public enum InvoiceStatus
     {
+        /// <summary>An invoice which has been.</summary>
         Draft,
+
+        /// <summary>An invoice which has been marked as deleted.</summary>
         Deleted,
+
+        /// <summary>An invoice which has been submitted for payment.</summary>
         Submitted,
+
+        /// <summary>An invoice which has been paid.</summary>
         Paid,
+
+        /// <summary>An invoice which is no longer required.</summary>
         Voided,
     }
 }
