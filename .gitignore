@@ -452,3 +452,9 @@ $RECYCLE.BIN/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Xml documentation files. These are auto-generated files.
+Plouton.Domain/Plouton.Domain.xml
+Plouton.Persistence.Abstractions/Plouton.Persistence.Abstractions.xml
+Plouton.Persistence.CosmosDb/Plouton.Persistence.CosmosDb.xml
+Plouton.Web.Api/Plouton.Web.Api.xml
