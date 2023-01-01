@@ -15,7 +15,10 @@ namespace Plouton.Web.Api.Controllers;
 /// Provides methods to interact with invoices.
 /// </summary>
 [ApiController]
+[ApiVersion("1.0")]
 [Route("/api/v1/invoices")]
+[Consumes("application/json")]
+[Produces("application/json")]
 public class InvoicesController : ControllerBase
 {
     private readonly InvoiceRepository invoiceRepository;
@@ -35,7 +38,7 @@ public class InvoicesController : ControllerBase
     }
 
     /// <summary>
-    /// Gets a page of invoices.
+    /// Gets a page of invoices. Callers must have the claim `invoice:read`.
     /// </summary>
     /// <param name="limit">The maximum number of invoices to be returned on a page.</param>
     /// <param name="token">The token to continue a previous query.</param>
@@ -46,6 +49,10 @@ public class InvoicesController : ControllerBase
     /// </returns>
     [HttpGet]
     [Authorize(Policy = "IsInvoiceReader")]
+    [ProducesResponseType(typeof(PagedResponseDto<GetInvoiceResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> Get([FromQuery] int? limit, [FromQuery] string? token, CancellationToken ct)
     {
         int ulimit = limit.GetValueOrDefault(1000);
@@ -62,7 +69,7 @@ public class InvoicesController : ControllerBase
     }
 
     /// <summary>
-    /// Gets a single invoice by id.
+    /// Gets a single invoice by id. Callers must have the claim `invoice:read`.
     /// </summary>
     /// <param name="id">The id of the invoice to retrieve.</param>
     /// <param name="ct">Used to cancel the asynchronous operation.</param>
@@ -72,6 +79,11 @@ public class InvoicesController : ControllerBase
     /// </returns>
     [HttpGet("{id:guid}")]
     [Authorize(Policy = "IsInvoiceReader")]
+    [ProducesResponseType(typeof(GetInvoiceResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Get([FromRoute] Guid id, CancellationToken ct)
     {
         Invoice? invoice = await this.invoiceRepository.ReadAsync(id, ct);
@@ -86,7 +98,7 @@ public class InvoicesController : ControllerBase
     }
 
     /// <summary>
-    /// Creates a new invoice.
+    /// Creates a new invoice. Callers must have the claim `invoice:write`.
     /// </summary>
     /// <param name="request">The new invoice.</param>
     /// <param name="ct">Used to cancel the asynchronous operation.</param>
@@ -96,6 +108,10 @@ public class InvoicesController : ControllerBase
     /// </returns>
     [HttpPost]
     [Authorize(Policy = "IsInvoiceWriter")]
+    [ProducesResponseType(typeof(GetInvoiceResponseDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> Post(
         CreateInvoiceRequestDto request,
         CancellationToken ct)
@@ -108,7 +124,7 @@ public class InvoicesController : ControllerBase
     }
 
     /// <summary>
-    /// Updates an existing invoice.
+    /// Updates an existing invoice. Callers must have the claim `invoice:write`.
     /// </summary>
     /// <param name="id">The new invoice.</param>
     /// <param name="request">The modified invoice.</param>
@@ -119,6 +135,11 @@ public class InvoicesController : ControllerBase
     /// </returns>
     [HttpPut("{id:guid}")]
     [Authorize(Policy = "IsInvoiceWriter")]
+    [ProducesResponseType(typeof(GetInvoiceResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Put([FromRoute] Guid id, UpdateInvoiceRequestDto request, CancellationToken ct)
     {
         Invoice? invoice = await this.invoiceRepository.ReadAsync(id, ct);
@@ -133,7 +154,7 @@ public class InvoicesController : ControllerBase
     }
 
     /// <summary>
-    /// Deletes an existing invoice.
+    /// Deletes an existing invoice. Callers must have the claim `invoice:delete`.
     /// </summary>
     /// <param name="id">The new invoice.</param>
     /// <param name="ct">Used to cancel the asynchronous operation.</param>
@@ -143,6 +164,11 @@ public class InvoicesController : ControllerBase
     /// </returns>
     [HttpDelete("{id:guid}")]
     [Authorize(Policy = "IsInvoiceDeleter")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete([FromRoute] Guid id, CancellationToken ct)
     {
         Invoice? invoice = await this.invoiceRepository.ReadAsync(id, ct);

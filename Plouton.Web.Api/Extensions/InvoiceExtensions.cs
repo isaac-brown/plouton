@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using NodaTime.Text;
 using Plouton.Domain.Entities;
 using Plouton.Web.Api.Models;
 
@@ -20,6 +21,8 @@ public static class InvoiceExtensions
     /// <returns>A new instance of <see cref="GetInvoiceResponseDto"/>.</returns>
     public static GetInvoiceResponseDto ToGetInvoiceResponseDto(this Invoice invoice)
     {
+        var localDateTimePattern = LocalDatePattern.Iso;
+
         return new GetInvoiceResponseDto
         {
             Id = invoice.Id,
@@ -29,8 +32,8 @@ public static class InvoiceExtensions
             Status = invoice.Status.ToString(),
             WhenCreated = invoice.WhenCreated.ToDateTimeUtc().ToLocalTime(),
             WhoCreated = invoice.WhoCreated,
-            WhenDue = invoice.WhenDue.AtMidnight().ToDateTimeUnspecified(),
-            WhenIssued = invoice.WhenIssued.AtMidnight().ToDateTimeUnspecified(),
+            WhenDue = localDateTimePattern.Format(invoice.WhenDue),
+            WhenIssued = localDateTimePattern.Format(invoice.WhenIssued),
             WhenModified = invoice.WhenModified.ToDateTimeUtc().ToLocalTime(),
             WhoModified = invoice.WhoModified,
         };

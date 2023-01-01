@@ -3,60 +3,20 @@
 // </copyright>
 
 using System.IdentityModel.Tokens.Jwt;
-using Keycloak.AuthServices.Authentication;
-using Keycloak.AuthServices.Authorization;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Azure.Cosmos;
-using Plouton.Domain;
-using Plouton.Persistence.Abstractions;
-using Plouton.Persistence.CosmosDb;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Plouton.Web.Api.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Configure Swagger-related services.
+builder.Services.AddApiVersioningConfigured();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-// Authentication and authorization.
-builder.Services.AddKeycloakAuthentication(builder.Configuration);
-builder.Services.AddKeycloakAuthorization(builder.Configuration);
-
-builder.Services.AddAuthorization(o =>
-{
-    o.FallbackPolicy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build();
-
-    o.AddPolicy("IsInvoiceReader", policy =>
-    {
-        // realm_access.roles
-        policy.RequireRealmRoles("invoice:read", "invoice:write", "invoice:delete");
-
-        // resource_access.<resource-name>.roles
-        // policy.RequireResourceRoles("invoice:read", "invoice:write");
-    });
-
-    o.AddPolicy("IsInvoiceWriter", policy =>
-    {
-        policy.RequireRealmRoles("invoice:write", "invoice:delete");
-    });
-
-    o.AddPolicy("IsInvoiceDeleter", policy =>
-    {
-        policy.RequireRealmRoles("invoice:delete");
-    });
-});
+builder.Services.AddSwagger();
 
 // Custom services.
-builder.Services.AddTransient<InvoiceRepository, CosmosInvoiceRepository>();
-builder.Services.AddSingleton(cfg =>
-{
-    string connectionString = builder.Configuration.GetConnectionString("Plouton");
-    return new CosmosClient(connectionString);
-});
-builder.Services.AddSingleton<IdGenerator, CosmosIdGenerator>();
+builder.Services.AddPlouton(builder.Configuration);
 
 // Clear the legacy mapping of claims from Open Id Connect to SOAP names.
 // See: https://mderriey.com/2019/06/23/where-are-my-jwt-claims/
@@ -68,7 +28,17 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+
+    // Enable middleware to serve Swagger-UI (HTML, JS, CSS, etc.) by specifying the Swagger JSON endpoint(s).
+    var descriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+    app.UseSwaggerUI(options =>
+    {
+        // Build a swagger endpoint for each discovered API version
+        foreach (var description in descriptionProvider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint($"{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+        }
+    });
 }
 
 app.UseHttpsRedirection();

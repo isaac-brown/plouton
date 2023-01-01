@@ -30,9 +30,9 @@ public class GetInvoiceResponseDto
 
     public string WhoCreated { get; set; }
 
-    public DateTime WhenDue { get; set; }
+    public string WhenDue { get; set; }
 
-    public DateTime WhenIssued { get; set; }
+    public string WhenIssued { get; set; }
 
     public DateTime WhenModified { get; set; }
 
