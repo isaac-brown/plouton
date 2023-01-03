@@ -6,8 +6,6 @@ using NodaTime;
 
 namespace Plouton.Domain.Entities;
 
-#pragma warning disable SA1313 // Parameter should begin with lower-case letter. StyleCop doesn't seem to properly support record types.
-
 /// <summary>
 /// Represents an invoice for goods/services.
 /// </summary>
