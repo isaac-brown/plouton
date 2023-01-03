@@ -40,7 +40,7 @@ public class InvoicesController : ControllerBase
     /// <summary>
     /// Gets a page of invoices. Callers must have the claim `invoice:read`.
     /// </summary>
-    /// <param name="limit">The maximum number of invoices to be returned on a page.</param>
+    /// <param name="limit">The maximum number of invoices to be returned on a page. Default is 1000.</param>
     /// <param name="token">The token to continue a previous query.</param>
     /// <param name="ct">Used to cancel the asynchronous operation.</param>
     /// <returns>
@@ -55,15 +55,9 @@ public class InvoicesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> Get([FromQuery] int? limit, [FromQuery] string? token, CancellationToken ct)
     {
-        int ulimit = limit.GetValueOrDefault(1000);
-        PagedCollection<Invoice> pagedInvoices = await this.invoiceRepository.ReadManyAsync(ulimit, token, ct);
+        PagedCollection<Invoice> pagedInvoices = await this.invoiceRepository.ReadManyAsync(limit.GetValueOrDefault(1000), token, ct);
 
-        var response = new PagedResponseDto<GetInvoiceResponseDto>
-        {
-            Items = pagedInvoices.Items.Select(invoice => invoice.ToGetInvoiceResponseDto()).ToList(),
-            Limit = pagedInvoices.Limit,
-            Token = pagedInvoices.Token,
-        };
+        var response = pagedInvoices.ToPagedResponseDto(invoice => invoice.ToGetInvoiceResponseDto());
 
         return this.Ok(response);
     }
@@ -116,7 +110,7 @@ public class InvoicesController : ControllerBase
         CreateInvoiceRequestDto request,
         CancellationToken ct)
     {
-        var invoice = request.ToInvoice(user: this.User.Identity);
+        var invoice = request.ToInvoice(user: this.User.Identity!);
 
         invoice = await this.invoiceRepository.CreateAsync(invoice.Id, invoice, ct);
 
@@ -148,7 +142,7 @@ public class InvoicesController : ControllerBase
             return this.NotFound();
         }
 
-        invoice = request.ToInvoice(invoice, this.User.Identity);
+        invoice = request.ToInvoice(invoice, this.User.Identity!);
         invoice = await this.invoiceRepository.UpdateAsync(invoice, ct);
         return this.Ok(invoice.ToGetInvoiceResponseDto());
     }
