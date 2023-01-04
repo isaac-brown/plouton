@@ -27,7 +27,9 @@ public class CosmosIdGenerator : IdGenerator
     /// <inheritdoc/>
     public override async Task<int> NextIdAsync()
     {
-        var container = this.client.GetDatabase("Plouton").GetContainer("Counters");
+        // TODO: Logging could be improved: it wasn't clear that the patch operation was failing during creation of a new invoice.
+        var container = this.client.GetDatabase(DatabasesMetadata.Plouton.Name)
+                                   .GetContainer(DatabasesMetadata.Plouton.Collections.Counters.Name);
         IReadOnlyList<PatchOperation> patchOperations = new List<PatchOperation>()
         {
             PatchOperation.Increment("/value", 1L),

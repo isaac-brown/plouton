@@ -32,7 +32,8 @@ public class CosmosInvoiceRepository : InvoiceRepository
         this.idGenerator = idGenerator;
     }
 
-    private Container Container => this.client.GetDatabase("Plouton").GetContainer("Invoices");
+    private Container Container => this.client.GetDatabase(DatabasesMetadata.Plouton.Name)
+                                              .GetContainer(DatabasesMetadata.Plouton.Collections.Invoices.Name);
 
     /// <inheritdoc/>
     public override async Task<PagedCollection<Invoice>> ReadManyAsync(int limit, string? token, CancellationToken cancellationToken)
@@ -100,10 +101,23 @@ public class CosmosInvoiceRepository : InvoiceRepository
     /// <inheritdoc/>
     public override async Task<Invoice?> ReadAsync(Guid key, CancellationToken cancellationToken)
     {
-        var partitionKey = new PartitionKey(key.ToString());
-        InvoiceRecord record = await this.Container.ReadItemAsync<InvoiceRecord>(key.ToString(), partitionKey, cancellationToken: cancellationToken);
+        try
+        {
+            var partitionKey = new PartitionKey(key.ToString());
+            InvoiceRecord record = await this.Container.ReadItemAsync<InvoiceRecord>(key.ToString(), partitionKey, cancellationToken: cancellationToken);
+            return record.ToInvoice();
+        }
+        catch (CosmosException ex)
+        {
+            // The current Cosmos implementation throws when trying to read an item which does not exist.
+            // In the case where a NotFound status code is returned, we will just return null instead.
+            if (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return null;
+            }
 
-        return record.ToInvoice();
+            throw;
+        }
     }
 
     /// <inheritdoc/>
