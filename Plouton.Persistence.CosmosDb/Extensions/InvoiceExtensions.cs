@@ -35,6 +35,7 @@ public static class InvoiceExtensions
             WhenIssued = localDatePattern.Format(invoice.WhenIssued),
             WhenModified = invoice.WhenModified.ToUnixTimeMilliseconds(),
             WhoModified = invoice.WhoModified,
+            Contact = invoice.Contact.ToContactRecord(),
         };
     }
 }

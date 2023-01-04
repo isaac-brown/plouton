@@ -50,7 +50,13 @@ Content-Type: application/json
         }
       ]
     }
-  ]
+  ],
+  "contact": {
+    "name": "Bob Jenkins",
+    "address": {
+      "addressLine1": "75 Jenkins way"
+    }
+  }
 }
 
 ###
@@ -73,7 +79,13 @@ Content-Type: application/json
   "whenCreated": "2022-01-29T21:26:13.353+13:00",
   "reference": "Another reference",
   "lineItems": [
-  ]
+  ],
+  "contact": {
+    "name": "Bob Jenkins",
+    "address": {
+      "addressLine1": "75 Jenkins way"
+    }
+  }
 }
 
 ### Delete one.

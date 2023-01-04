@@ -1,4 +1,4 @@
-// <copyright file="GetInvoiceResponseDto.cs" company="Isaac Brown">
+// <copyright file="CreateOrUpdateAddressRequestDto.cs" company="Isaac Brown">
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -7,40 +7,37 @@ using Plouton.Domain.Entities;
 namespace Plouton.Web.Api.Models;
 
 /// <summary>
-/// Represents the JSON document which is used to get/read <see cref="Invoice"/> instances.
+/// Represents the JSON document which is used to create or update <see cref="Address"/> instances.
 /// </summary>
-public class GetInvoiceResponseDto
+public class CreateOrUpdateAddressRequestDto
 {
     // Disable some warnings as this class is a POCO used to map data to/from HTTP request/response bodies.
 #pragma warning disable SA1600 //Elements should be documented
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 #pragma warning disable CS8618 // Non-nullable property must contain a non-null value when exiting constructor.
 
-    public Guid Id { get; set; }
+    public string AddressLine1 { get; set; }
 
-    public DateTime WhenCreated { get; set; }
+    public string? AddressLine2 { get; set; }
 
-    public string InvoiceNumber { get; set; }
+    public string? AddressLine3 { get; set; }
 
-    public IReadOnlyList<GetLineItemResponseDto> LineItems { get; set; }
-
-    public string? Reference { get; set; }
-
-    public string Status { get; set; }
-
-    public string WhoCreated { get; set; }
-
-    public string WhenDue { get; set; }
-
-    public string WhenIssued { get; set; }
-
-    public DateTime WhenModified { get; set; }
-
-    public string WhoModified { get; set; }
-
-    public GetContactResponseDto Contact { get; set; }
+    public string? AddressLine4 { get; set; }
 
 #pragma warning restore SA1600 //Elements should be documented
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 #pragma warning restore CS8618 // Non-nullable property must contain a non-null value when exiting constructor.
+
+    /// <summary>
+    /// Maps this instance to a new instance of <see cref="Address"/>.
+    /// </summary>
+    /// <returns>A new instance of <see cref="Address"/>.</returns>
+    public Address ToAddress()
+    {
+        return new Address(
+            AddressLine1: this.AddressLine1,
+            AddressLine2: this.AddressLine2,
+            AddressLine3: this.AddressLine3,
+            AddressLine4: this.AddressLine4);
+    }
 }

@@ -29,6 +29,8 @@ public class CreateInvoiceRequestDto
 
     public IEnumerable<CreateOrUpdateLineItemRequestDto> LineItems { get; set; }
 
+    public CreateOrUpdateContactRequestDto Contact { get; set; }
+
 #pragma warning restore SA1600 //Elements should be documented
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 #pragma warning restore CS8618 // Non-nullable property must contain a non-null value when exiting constructor.
@@ -58,6 +60,7 @@ public class CreateInvoiceRequestDto
             Reference: this.Reference,
             WhenModified: Instant.FromDateTimeUtc(DateTime.UtcNow),
             WhoModified: user.Name ?? "<no username found>",
-            LineItems: this.LineItems.Select(lineItem => lineItem.ToLineItem()).ToList());
+            LineItems: this.LineItems.Select(lineItem => lineItem.ToLineItem()).ToList(),
+            Contact: this.Contact.ToContact());
     }
 }

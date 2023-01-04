@@ -49,8 +49,8 @@ public class InvoiceRecord
     [JsonProperty(propertyName: "whoModified")]
     public string WhoModified { get; set; }
 
-    [JsonProperty(propertyName: "lneItems")]
-    public IReadOnlyList<LineItemRecord> LineItems { get; set; }
+    [JsonProperty(propertyName: "contact")]
+    public ContactRecord Contact { get; init; }
 
 #pragma warning restore SA1600 //Elements should be documented
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

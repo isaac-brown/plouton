@@ -23,6 +23,7 @@ namespace Plouton.Domain.Entities;
 /// <param name="WhenModified">The <see cref="Instant"/> at which the invoice was last modified.</param>
 /// <param name="WhoModified">The user which last modified the invoice.</param>
 /// <param name="LineItems">The line items for this invoice.</param>
+/// <param name="Contact">The contact for this invoice.</param>
 public record Invoice(Guid Id,
                       string InvoiceNumber,
                       Instant WhenCreated,
@@ -33,4 +34,5 @@ public record Invoice(Guid Id,
                       string? Reference,
                       Instant WhenModified,
                       string WhoModified,
-                      IReadOnlyList<LineItem> LineItems);
+                      IReadOnlyList<LineItem> LineItems,
+                      Contact Contact);
