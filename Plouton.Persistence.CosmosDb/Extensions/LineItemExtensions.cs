@@ -16,7 +16,7 @@ public static class LineItemExtensions
     /// <summary>
     /// Maps the given <paramref name="lineItem"/> to a new instance of <see cref="LineItemRecord"/>.
     /// </summary>
-    /// <param name="lineItem">The line item which properties will be mapped from.</param>
+    /// <param name="lineItem">The <see cref="LineItem"/> instance which properties will be mapped from.</param>
     /// <returns>A new instance of <see cref="LineItemRecord"/>.</returns>
     public static LineItemRecord ToLineItemRecord(this LineItem lineItem)
     {

@@ -81,6 +81,7 @@ public class InvoicesController : ControllerBase
     public async Task<ActionResult> Get([FromRoute] Guid id, CancellationToken ct)
     {
         Invoice? invoice = await this.invoiceRepository.ReadAsync(id, ct);
+
         if (invoice is null)
         {
             return this.NotFound();

@@ -17,7 +17,7 @@ public static class InvoiceExtensions
     /// <summary>
     /// Maps the given <paramref name="invoice"/> to a new instance of <see cref="InvoiceRecord"/>.
     /// </summary>
-    /// <param name="invoice">The invoice which properties will be mapped from.</param>
+    /// <param name="invoice">The <see cref="Invoice"/> instance which properties will be mapped from.</param>
     /// <returns>A new instance of <see cref="InvoiceRecord"/>.</returns>
     public static InvoiceRecord ToInvoiceRecord(this Invoice invoice)
     {

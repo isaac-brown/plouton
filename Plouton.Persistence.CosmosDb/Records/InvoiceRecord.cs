@@ -49,8 +49,11 @@ public class InvoiceRecord
     [JsonProperty(propertyName: "whoModified")]
     public string WhoModified { get; set; }
 
+    [JsonProperty(propertyName: "lineItems")]
+    public IReadOnlyList<LineItemRecord> LineItems { get; set; }
+
     [JsonProperty(propertyName: "contact")]
-    public ContactRecord Contact { get; init; }
+    public ContactRecord Contact { get; set; }
 
 #pragma warning restore SA1600 //Elements should be documented
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
@@ -74,6 +77,7 @@ public class InvoiceRecord
             Reference: this.Reference,
             WhenModified: Instant.FromUnixTimeMilliseconds(this.WhenModified),
             WhoModified: this.WhoModified,
-            LineItems: this.LineItems.Select(lineItem => lineItem.ToLineItem()).ToList());
+            LineItems: this.LineItems.Select(lineItem => lineItem.ToLineItem()).ToList(),
+            Contact: this.Contact.ToContact());
     }
 }
