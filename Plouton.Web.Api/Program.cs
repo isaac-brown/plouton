@@ -15,6 +15,9 @@ builder.Services.AddApiVersioningConfigured();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwagger();
 
+// Authentication and authorization.
+builder.Services.AddAuthz(builder.Configuration);
+
 // Custom services.
 builder.Services.AddPlouton(builder.Configuration);
 
