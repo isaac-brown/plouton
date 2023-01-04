@@ -6,6 +6,7 @@ using Microsoft.Azure.Cosmos;
 using Plouton.Domain;
 using Plouton.Persistence.Abstractions;
 using Plouton.Persistence.CosmosDb;
+using Plouton.Web.Api.HostedServices;
 
 namespace Plouton.Web.Api.Extensions;
 
@@ -28,7 +29,9 @@ public static class ConfigurePlouton
             string connectionString = configuration.GetConnectionString("Plouton");
             return new CosmosClient(connectionString);
         });
+
         services.AddSingleton<IdGenerator, CosmosIdGenerator>();
+        services.AddHostedService<MigratorHostedService>();
 
         return services;
     }
